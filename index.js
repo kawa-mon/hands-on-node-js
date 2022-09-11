@@ -11,7 +11,9 @@ function* generatorFunc() {
 }
 
 const generator = generatorFunc()
-generator.next()
-generator.next()
-generator.next()
-generator.next()
+const iterator = generator[Symbol.iterator]()
+console.log(generator === iterator)
+
+for (const v of generator) {
+  console.log('for...of', v)
+}
