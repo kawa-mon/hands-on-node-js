@@ -19,9 +19,16 @@ function* asyncWithGeneratorFunc(json) {
   }
 }
 
-const asyncWithGenerator1 = asyncWithGeneratorFunc('{"foo":1}')
-const promise1 = asyncWithGenerator1.next().value
-console.log(promise1)
-promise1.then((result) => {
-  asyncWithGenerator1.next(result)
-})
+function handleAsyncWithGenerator(generator, resolved) {
+  const { done, value } = generator.next(resolved)
+  if (done) {
+    return Promise.resolve(value)
+  }
+  return value.then(
+    (resolved) => handleAsyncWithGenerator(generator, resolved),
+    (err) => generator.throw(err)
+  )
+}
+
+handleAsyncWithGenerator(asyncWithGeneratorFunc('{"foo":1}'))
+handleAsyncWithGenerator(asyncWithGeneratorFunc('不正なJSON'))
