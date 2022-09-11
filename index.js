@@ -1,24 +1,17 @@
-const cache = {}
-
-function parseJSONAsync(json) {
-  return new Promise((resolve, reject) =>
-    setTimeout(() => {
-      try {
-        resolve(JSON.parse(json))
-      } catch (err) {
-        reject(err)
-      }
-    }, 1000)
-  )
+function* generatorFunc() {
+  console.log('ジェネレータ関数開始')
+  console.log('yield 1')
+  yield 1
+  console.log('yield 2')
+  yield 2
+  console.log('yield 3')
+  yield 3
+  console.log('ジェネレータ関数終了')
+  return 'ジェネレータ関数戻り値'
 }
 
-const toBeFulfilled = parseJSONAsync('{"foo":1}')
-const toBeRejected = parseJSONAsync('不正なJSON')
-console.log('********** Promise生成直後 **********')
-console.log(toBeFulfilled)
-console.log(toBeRejected)
-setTimeout(() => {
-  console.log('********** 1秒後 **********')
-  console.log(toBeFulfilled)
-  console.log(toBeRejected)
-}, 1000)
+const generator = generatorFunc()
+generator.next()
+generator.next()
+generator.next()
+generator.next()
