@@ -1,17 +1,13 @@
-function* resetableGeneratorFunc() {
-  let count = 0
-  while (true) {
-    if (yield count++) {
-      count = 0
-    }
+function* tryCatchGeneratorFunc() {
+  try {
+    yield 1
+  } catch (err) {
+    console.log('エラーをキャッチ', err)
+    yield 2
   }
 }
 
-const resetableGenerator = resetableGeneratorFunc()
-console.log(resetableGenerator.next())
-console.log(resetableGenerator.next())
-console.log(resetableGenerator.next())
-console.log(resetableGenerator.next())
-console.log(resetableGenerator.next(true))
-console.log(resetableGenerator.next())
-console.log(resetableGenerator.next())
+const tryCatchGenerator = tryCatchGeneratorFunc()
+console.log(tryCatchGenerator.next())
+console.log(tryCatchGenerator.throw(new Error('エラー')))
+console.log(tryCatchGenerator.next())
