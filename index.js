@@ -10,25 +10,14 @@ function parseJSONAsync(json) {
   )
 }
 
-function* asyncWithGeneratorFunc(json) {
+async function asyncFunc(json) {
   try {
-    const result = yield parseJSONAsync(json)
+    const result = await parseJSONAsync(json)
     console.log('パース結果', result)
   } catch (err) {
     console.log('エラーをキャッチ', err)
   }
 }
 
-function handleAsyncWithGenerator(generator, resolved) {
-  const { done, value } = generator.next(resolved)
-  if (done) {
-    return Promise.resolve(value)
-  }
-  return value.then(
-    (resolved) => handleAsyncWithGenerator(generator, resolved),
-    (err) => generator.throw(err)
-  )
-}
-
-handleAsyncWithGenerator(asyncWithGeneratorFunc('{"foo":1}'))
-handleAsyncWithGenerator(asyncWithGeneratorFunc('不正なJSON'))
+asyncFunc('{"foo":1}')
+asyncFunc('不正なJSON')
