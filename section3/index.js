@@ -1,26 +1,25 @@
 const events = require('events')
 
-function createFizzBuzzEventEmitter(until) {
-  const eventEmitter = new events.EventEmitter()
-  process.nextTick(() => _emitFizzBuzz(eventEmitter, until))
-  return eventEmitter
-}
-
-async function _emitFizzBuzz(eventEmitter, until) {
-  eventEmitter.emit('start')
-  let count = 1
-  while (count <= until) {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    if (count % 15 === 0) {
-      eventEmitter.emit('FizzBuzz', count)
-    } else if (count % 3 === 0) {
-      eventEmitter.emit('Fizz', count)
-    } else if (count % 5 === 0) {
-      eventEmitter.emit('Buzz', count)
+class FizzBuzzEventEmitter extends events.EventEmitter {
+  async start(until) {
+    this.emit('start')
+    let count = 1
+    while (true) {
+      if (count % 15 === 0) {
+        this.emit('FizzBuzz', count)
+      } else if (count % 3 === 0) {
+        this.emit('Fizz', count)
+      } else if (count % 5 === 0) {
+        this.emit('Buzz', count)
+      }
+      count += 1
+      if (count >= until) {
+        break
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100))
     }
-    count += 1
+    this.emit('end')
   }
-  eventEmitter.emit('end')
 }
 
 function startListener() {
@@ -45,9 +44,10 @@ function endListener() {
     .off('end', endListener)
 }
 
-createFizzBuzzEventEmitter(40)
+new FizzBuzzEventEmitter()
   .on('start', startListener)
   .on('Fizz', fizzListener)
   .once('Buzz', buzzListener)
   .on('FizzBuzz', fizzBuzzListener)
   .on('end', endListener)
+  .start(40)
