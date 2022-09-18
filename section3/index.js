@@ -1,7 +1,30 @@
-const fs = require('fs')
+const stream = require('stream')
 
-const fileWriteStream = fs.createWriteStream('section3/dest.txt')
-fileWriteStream.write('Hello\n')
-fileWriteStream.write('World\n')
-fileWriteStream.end()
-fs.readFileSync('section3/dest.txt', 'utf8')
+class DelayLogStream extends stream.Writable {
+  constructor(options) {
+    super({ objectMode: true, ...options })
+  }
+
+  _write(chunk, _encoding, callback) {
+    console.log('_write()')
+    const { message, delay } = chunk
+    setTimeout(() => {
+      console.log(message)
+      callback()
+    }, delay)
+  }
+}
+
+const delayLogStream = new DelayLogStream()
+delayLogStream.write({
+  message: 'Hi',
+  delay: 0,
+})
+delayLogStream.write({
+  message: 'Thank you',
+  delay: 1000,
+})
+delayLogStream.write({
+  message: 'Bi',
+  delay: 100,
+})
