@@ -1,5 +1,25 @@
 const stream = require('stream')
 
+class HelloReadableStream extends stream.Readable {
+  constructor(options) {
+    super(options)
+    this.languages = ['JavaScript', 'Python', 'Java', 'C#']
+  }
+
+  _read(size) {
+    console.log('_read()')
+    let language
+    while ((language = this.languages.shift())) {
+      if (!this.push(`Hello, ${language}!\n`)) {
+        console.log('読み込み中断')
+        return
+      }
+    }
+    console.log('読み込み完了')
+    this.push(null)
+  }
+}
+
 class LineTransformStream extends stream.Transform {
   remaining = ''
   constructor(options) {
@@ -26,14 +46,22 @@ class LineTransformStream extends stream.Transform {
   }
 }
 
-const lineTransformStream = new LineTransformStream()
-lineTransformStream.on('readable', () => {
-  let chunk
-  while ((chunk = lineTransformStream.read()) !== null) {
-    console.log(chunk)
+class DelayLogStream extends stream.Writable {
+  constructor(options) {
+    super({ objectMode: true, ...options })
   }
-})
 
-lineTransformStream.write('foo\nbar')
-lineTransformStream.write('baz')
-lineTransformStream.end()
+  _write(chunk, _encoding, callback) {
+    console.log('_write()')
+    const { message, delay } = chunk
+    setTimeout(() => {
+      console.log(message)
+      callback()
+    }, delay)
+  }
+}
+
+new HelloReadableStream()
+  .pipe(new LineTransformStream())
+  .pipe(new DelayLogStream())
+  .on('finish', () => console.log('完了'))
