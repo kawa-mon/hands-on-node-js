@@ -1,7 +1,14 @@
-const events = require('events')
+const fs = require('fs')
+const crypto = require('crypto')
 
-const eventBEmitter = new events.EventEmitter()
-const eventBPromise = events.once(eventBEmitter, 'eventB')
-eventBPromise.then((arg) => console.log('eventB発生', arg))
-eventBEmitter.emit('eventB', 'Hello', 'World')
-eventBEmitter.emit('eventB', 'one more')
+function copyFileWithStream(src, dest, cb) {
+  fs.createReadStream(src)
+    .pipe(crypto.createHash('sha256'))
+    .pipe(fs.createWriteStream(dest))
+    .on('finish', cb)
+}
+
+fs.writeFileSync('section3/src.txt', 'Hello, World!')
+copyFileWithStream('section3/src.txt', 'section3/dest.txt', () =>
+  console.log('コピー完了')
+)
