@@ -1,30 +1,39 @@
 const stream = require('stream')
 
-class DelayLogStream extends stream.Writable {
+class LineTransformStream extends stream.Transform {
+  remaining = ''
   constructor(options) {
-    super({ objectMode: true, ...options })
+    super({ readableObjectMode: true, ...options })
   }
 
-  _write(chunk, _encoding, callback) {
-    console.log('_write()')
-    const { message, delay } = chunk
-    setTimeout(() => {
-      console.log(message)
-      callback()
-    }, delay)
+  _transform(chunk, _encoding, callback) {
+    console.log('_transform()')
+    const lines = (chunk + this.remaining).split(/\n/)
+    this.remaining = lines.pop()
+    for (const line of lines) {
+      this.push({ message: line, delay: line.length * 100 })
+    }
+    callback()
+  }
+
+  _flush(callback) {
+    console.log('_flush()')
+    this.push({
+      message: this.remaining,
+      delay: this.remaining.length * 100,
+    })
+    callback()
   }
 }
 
-const delayLogStream = new DelayLogStream()
-delayLogStream.write({
-  message: 'Hi',
-  delay: 0,
+const lineTransformStream = new LineTransformStream()
+lineTransformStream.on('readable', () => {
+  let chunk
+  while ((chunk = lineTransformStream.read()) !== null) {
+    console.log(chunk)
+  }
 })
-delayLogStream.write({
-  message: 'Thank you',
-  delay: 1000,
-})
-delayLogStream.write({
-  message: 'Bi',
-  delay: 100,
-})
+
+lineTransformStream.write('foo\nbar')
+lineTransformStream.write('baz')
+lineTransformStream.end()
