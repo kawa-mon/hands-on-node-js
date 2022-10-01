@@ -25,7 +25,7 @@ app.post('/api/todos', (req, res, next) => {
   }
   const todo = { id: (id += 1), title, completed: false }
   todos.push(todo)
-  res.status(201).json(todos)
+  res.status(201).json(todo)
 })
 
 app.use((err, req, res, next) => {
@@ -34,3 +34,15 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(3000)
+
+const next = require('next')
+const dev = process.env.NODE_ENV !== 'production'
+const nextApp = next({ dev })
+
+nextApp.prepare().then(
+  () => app.get('*', nextApp.getRequestHandler()),
+  (err) => {
+    console.error(err)
+    process.exit(1)
+  }
+)
