@@ -4,9 +4,9 @@ import Head from 'next/head'
 import 'isomorphic-fetch'
 
 const pages = {
-  index: { title: 'すべてのToDo', fetchQuery: '' },
-  active: { title: '未完了のToDo', fetchQuery: '?completed=false' },
-  completed: { title: '完了したToDo', fetchQuery: '?completed=true' },
+  index: { title: 'すべてのToDo' },
+  active: { title: '未完了のToDo', completed: false },
+  completed: { title: '完了したToDo', completed: true },
 }
 
 const pageLinks = Object.keys(pages).map((page, index) => (
@@ -16,13 +16,21 @@ const pageLinks = Object.keys(pages).map((page, index) => (
 ))
 
 export default function Todos(props) {
-  const { title, fetchQuery } = pages[props.page]
+  const { title, completed } = pages[props.page]
 
   const [todos, setTodos] = useState([])
   useEffect(() => {
-    fetch(`/api/todos${fetchQuery}`).then(async (res) =>
-      res.ok ? setTodos(await res.json()) : alert(await res.text())
-    )
+    const eventSource = new EventSource('/api/todos/events')
+    eventSource.addEventListener('message', (e) => {
+      const todos = JSON.parse(e.data)
+      setTodos(
+        typeof completed === 'undefined'
+          ? todos
+          : todos.filter((todo) => todo.completed === completed)
+      )
+    })
+    eventSource.addEventListener('error', (e) => console.log('SSEエラー', e))
+    return () => eventSource.close()
   }, [props.page])
 
   return (
