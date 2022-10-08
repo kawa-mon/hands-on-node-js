@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "file-system": "node app",
-    "sqlite": "node app"
+    "sqlite": "node app",
+    "leveldb":"node app"
   },
   "keywords": [],
   "author": "",
