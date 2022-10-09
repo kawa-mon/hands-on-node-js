@@ -1,5 +1,4 @@
 'use strict'
-const { deepEqual } = require('assert')
 const { assert } = require('chai')
 
 for (const dataStorageName of ['file-system', 'sqlite', 'leveldb']) {
