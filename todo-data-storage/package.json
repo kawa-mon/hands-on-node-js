@@ -6,7 +6,7 @@
   "scripts": {
     "file-system": "node app",
     "sqlite": "node app",
-    "leveldb":"node app"
+    "leveldb": "node app"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +16,11 @@
     "level": "^6.0.1",
     "sqlite3": "^5.1.2",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.2.0",
+    "nyc": "^15.0.1",
+    "sinon": "^9.0.2"
   }
 }
