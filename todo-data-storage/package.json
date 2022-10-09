@@ -6,7 +6,8 @@
   "scripts": {
     "file-system": "node app",
     "sqlite": "node app",
-    "leveldb": "node app"
+    "leveldb": "node app",
+    "jest": "jest --silent"
   },
   "mocha": {
     "spec": "test/mocha/**/*.js"
