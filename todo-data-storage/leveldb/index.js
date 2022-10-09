@@ -43,7 +43,7 @@ exports.update = (id, update) =>
           .del(`todo-completed-${oldTodo.completed}:${id}`)
           .put(`todo-completed-${newTodo.completed}:${id}`, id)
       }
-      return batch.write()
+      return batch.write().then(() => newTodo)
     },
     (err) => (err.notFound ? null : Promise.reject(err))
   )
