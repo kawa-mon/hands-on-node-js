@@ -11,6 +11,13 @@
   "mocha": {
     "spec": "test/mocha/**/*.js"
   },
+  "jest": {
+    "testMatch": [
+      "**/test/jest/**/*.js"
+    ],
+    "clearMocks": true,
+    "restoreMocks": true
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +30,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "jest": "^26.0.1",
     "mocha": "^7.2.0",
     "nyc": "^15.0.1",
     "sinon": "^9.0.2"
